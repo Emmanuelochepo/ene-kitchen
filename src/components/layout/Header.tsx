@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Menu, X, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/Button";
@@ -16,6 +16,13 @@ const NAV_LINKS = [
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    document.body.style.overflow = menuOpen ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   return (
     <header className="sticky top-0 z-50 bg-surface/95 backdrop-blur-sm border-b border-outline-variant">
@@ -63,31 +70,55 @@ export function Header() {
             aria-label={menuOpen ? "Close menu" : "Open menu"}
             aria-expanded={menuOpen}
             onClick={() => setMenuOpen((open) => !open)}
-            className="p-2 text-primary cursor-pointer"
+            className="relative z-50 p-2 text-primary cursor-pointer"
           >
-            {menuOpen ? <X size={26} /> : <Menu size={26} />}
+            <Menu
+              size={26}
+              className={`absolute inset-2 transition-all duration-300 ${
+                menuOpen ? "opacity-0 rotate-90 scale-50" : "opacity-100 rotate-0 scale-100"
+              }`}
+            />
+            <X
+              size={26}
+              className={`transition-all duration-300 ${
+                menuOpen ? "opacity-100 rotate-0 scale-100" : "opacity-0 -rotate-90 scale-50"
+              }`}
+            />
           </button>
         </div>
       </div>
 
-      {/* Mobile menu panel */}
-      {menuOpen && (
-        <nav className="lg:hidden border-t border-outline-variant bg-surface px-6 py-6 flex flex-col gap-1">
-          {NAV_LINKS.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              onClick={() => setMenuOpen(false)}
-              className="font-body text-[18px] text-on-surface py-3 border-b border-outline-variant last:border-b-0"
-            >
-              {link.label}
-            </Link>
-          ))}
-          <Button variant="primary" className="w-full mt-4 justify-center">
-            Order Now
-          </Button>
-        </nav>
-      )}
+      {/* Backdrop */}
+      <div
+        onClick={() => setMenuOpen(false)}
+        aria-hidden="true"
+        className={`lg:hidden fixed inset-0 top-16 bg-inverse-surface/40 transition-opacity duration-300 ${
+          menuOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      />
+
+      {/* Mobile menu panel — overlays content, doesn't push it down */}
+      <nav
+        className={`lg:hidden absolute top-full inset-x-0 bg-surface border-t border-outline-variant px-6 py-6 flex flex-col gap-1 shadow-overlay transition-all duration-300 ease-out origin-top ${
+          menuOpen
+            ? "opacity-100 translate-y-0 pointer-events-auto"
+            : "opacity-0 -translate-y-2 pointer-events-none"
+        }`}
+      >
+        {NAV_LINKS.map((link) => (
+          <Link
+            key={link.href}
+            href={link.href}
+            onClick={() => setMenuOpen(false)}
+            className="font-body text-[18px] text-on-surface py-3 border-b border-outline-variant last:border-b-0"
+          >
+            {link.label}
+          </Link>
+        ))}
+        <Button variant="primary" className="w-full mt-4 justify-center">
+          Order Now
+        </Button>
+      </nav>
     </header>
   );
 }
