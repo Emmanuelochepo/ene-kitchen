@@ -63,7 +63,26 @@
   /* Elevation (ambient, primary-green tinted) */
   --shadow-raised: 0px 4px 20px rgba(27, 58, 45, 0.08);
   --shadow-overlay: 0px 12px 32px rgba(0, 0, 0, 0.12);
+
+  /* Layout */
+  --spacing-container-max: 1200px;
+  --spacing-gutter: 20px;
 }
+
+/*
+  NOTE on spacing: Design.md's spacing scale (xs:4 sm:8 md:16 lg:24 xl:48)
+  is NOT defined as named Tailwind tokens, because names like xs/sm/md/lg/xl
+  collide with Tailwind's built-in named scale (used by max-w-xs, etc) and
+  silently break sizing utilities across the whole app.
+  Tailwind's default unit is already 4px (--spacing: 0.25rem), matching
+  Design.md's stated "unit: 4px" exactly, so the scale maps directly onto
+  plain numeric utilities:
+    xs = 4px  -> p-1 / gap-1 / m-1
+    sm = 8px  -> p-2 / gap-2 / m-2
+    md = 16px -> p-4 / gap-4 / m-4
+    lg = 24px -> p-6 / gap-6 / m-6
+    xl = 48px -> p-12 / gap-12 / m-12
+*/
 
 @theme inline {
   --color-surface: var(--color-surface);
@@ -129,13 +148,8 @@
   --radius-xl: 1.5rem;
   --radius-full: 9999px;
 
-  --spacing-xs: 4px;
-  --spacing-sm: 8px;
-  --spacing-md: 16px;
-  --spacing-lg: 24px;
-  --spacing-xl: 48px;
-  --spacing-container-max: 1200px;
-  --spacing-gutter: 20px;
+  --spacing-container-max: var(--spacing-container-max);
+  --spacing-gutter: var(--spacing-gutter);
 
   --shadow-raised: var(--shadow-raised);
   --shadow-overlay: var(--shadow-overlay);

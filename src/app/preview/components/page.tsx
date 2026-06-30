@@ -14,7 +14,7 @@ import {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-6 py-xl border-b border-outline-variant">
+    <section className="flex flex-col gap-6 py-12 border-b border-outline-variant">
       <LabelMd className="text-secondary">{title}</LabelMd>
       <div className="flex flex-wrap items-start gap-6">{children}</div>
     </section>
@@ -23,7 +23,7 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default function ComponentsPreview() {
   return (
-    <main className="max-w-[1200px] mx-auto px-6 md:px-12 py-xl flex flex-col">
+    <main className="max-w-[1200px] mx-auto px-6 md:px-12 py-12 flex flex-col">
       <HeadlineXl className="mb-2">Component Library</HeadlineXl>
       <BodyLg className="mb-8">Phase 1 — internal preview, not a public page.</BodyLg>
 
@@ -77,7 +77,7 @@ export default function ComponentsPreview() {
               Hot
             </Badge>
           </div>
-          <div className="p-lg">
+          <div className="p-6">
             <HeadlineMd className="mb-2">Pepper Soup</HeadlineMd>
             <BodyLg className="font-bold text-secondary">₦6,000</BodyLg>
           </div>

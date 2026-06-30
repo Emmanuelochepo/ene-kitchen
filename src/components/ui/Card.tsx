@@ -19,7 +19,7 @@ export function Card({ children, elevation = "raised", noPadding = false, classN
       className={clsx(
         "bg-surface-container-lowest rounded-md overflow-hidden",
         elevation === "raised" ? "shadow-raised" : "shadow-overlay",
-        !noPadding && "p-lg",
+        !noPadding && "p-6",
         className
       )}
       {...props}
