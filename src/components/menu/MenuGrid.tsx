@@ -52,6 +52,7 @@ export function MenuGrid() {
               name={dish.name}
               description={dish.description}
               price={dish.price}
+              image={dish.image}
               badge={dish.badge}
             />
           ))}

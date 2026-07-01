@@ -1,27 +1,11 @@
 import { Button } from "@/components/ui/Button";
 import { FoodCard } from "@/components/ui/FoodCard";
 import { HeadlineLg, BodyLg, LabelMd } from "@/components/ui/Typography";
+import { DISHES } from "@/lib/menu-data";
 
-const FEATURED_DISHES = [
-  {
-    name: "Jollof Rice Special",
-    description: "Smoky party-style jollof with grilled chicken and fried plantain.",
-    price: "₦8,500",
-    badge: { label: "Popular", variant: "gold" as const },
-  },
-  {
-    name: "Pepper Soup",
-    description: "Goat meat simmered in a peppery, aromatic broth.",
-    price: "₦6,000",
-    badge: { label: "Hot", variant: "spice" as const },
-  },
-  {
-    name: "Vegetable Efo Riro",
-    description: "Slow-cooked spinach stew with assorted vegetables and palm oil.",
-    price: "₦7,000",
-    badge: { label: "Vegan", variant: "forest" as const },
-  },
-];
+// Pick 3 featured dishes by id
+const FEATURED_IDS = ["jollof-rice-special", "pepper-soup", "efo-riro"];
+const FEATURED_DISHES = FEATURED_IDS.map((id) => DISHES.find((d) => d.id === id)!);
 
 export function FeaturedDishes() {
   return (
@@ -37,7 +21,14 @@ export function FeaturedDishes() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {FEATURED_DISHES.map((dish) => (
-          <FoodCard key={dish.name} {...dish} />
+          <FoodCard
+            key={dish.id}
+            name={dish.name}
+            description={dish.description}
+            price={dish.price}
+            image={dish.image}
+            badge={dish.badge}
+          />
         ))}
       </div>
 
