@@ -22,7 +22,7 @@ export interface FoodCardProps {
  */
 export function FoodCard({ name, description, price, image, badge, onAddToCart }: FoodCardProps) {
   return (
-    <Card noPadding className="h-full flex flex-col group">
+    <Card noPadding className="h-full flex flex-col group card-hover">
       {/* 4:3 image */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-surface-container-high">
         {image ? (

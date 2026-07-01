@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Menu, X, ShoppingBag } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { HeadlineMd } from "@/components/ui/Typography";
 
@@ -39,7 +39,7 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="font-body text-[16px] text-on-surface hover:text-secondary transition-colors"
+              className="nav-link font-body text-[16px] text-on-surface hover:text-secondary transition-colors"
             >
               {link.label}
             </Link>
@@ -51,7 +51,7 @@ export function Header() {
             aria-label="View cart"
             className="p-2 text-primary hover:text-secondary transition-colors cursor-pointer"
           >
-            <ShoppingBag size={22} />
+            <ShoppingCart size={22} />
           </button>
           <Button variant="primary" size="sm">
             Order Now
@@ -64,7 +64,7 @@ export function Header() {
             aria-label="View cart"
             className="p-2 text-primary hover:text-secondary transition-colors cursor-pointer"
           >
-            <ShoppingBag size={22} />
+            <ShoppingCart size={22} />
           </button>
           <button
             aria-label={menuOpen ? "Close menu" : "Open menu"}

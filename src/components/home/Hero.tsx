@@ -7,7 +7,7 @@ export function Hero() {
     <section className="relative overflow-hidden">
       <div className="max-w-[1200px] mx-auto px-6 md:px-12 py-16 md:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16 items-center">
         {/* Text content */}
-        <div className="flex flex-col items-center lg:items-start gap-6 order-2 lg:order-1 text-center lg:text-left">
+        <div className="flex flex-col items-center lg:items-start gap-6 order-2 lg:order-1 text-center lg:text-left animate-fade-in-up">
           <LabelMd className="text-secondary">The Discerning Host</LabelMd>
           <HeadlineXl as="h1">
             Home-cooked Nigerian cuisine, made for how you actually eat

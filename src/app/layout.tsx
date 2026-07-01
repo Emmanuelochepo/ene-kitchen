@@ -8,6 +8,7 @@ import "./globals.css";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { WhatsAppWidget } from "@/components/ui/WhatsAppWidget";
 
 export const metadata: Metadata = {
   title: "Ene's Kitchen",
@@ -26,6 +27,7 @@ export default function RootLayout({
         <Header />
         <div className="flex-1 flex flex-col">{children}</div>
         <Footer />
+        <WhatsAppWidget />
       </body>
     </html>
   );
