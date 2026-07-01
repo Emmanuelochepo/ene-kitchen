@@ -54,7 +54,7 @@ export function ContactContent() {
                   placeholder="Tell us about your order or event..."
                   value={form.message}
                   onChange={handleChange}
-                  className="w-full rounded-md bg-surface-container-low px-4 py-3 font-body text-[16px] text-on-surface placeholder:text-outline border border-transparent outline-none transition-shadow duration-150 focus:ring-1 focus:ring-primary resize-none"
+                  className="w-full rounded-md bg-surface-container-low px-4 py-3 font-body text-[15px] md:text-[16px] text-on-surface placeholder:text-outline border border-outline-variant outline-none transition-all duration-150 hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none"
                 />
               </div>
               <Button variant="primary" onClick={handleSubmit} className="w-full sm:w-auto justify-center">

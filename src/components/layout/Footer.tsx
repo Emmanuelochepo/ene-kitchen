@@ -1,24 +1,6 @@
 import Link from "next/link";
-import { Phone } from "lucide-react";
+import { Phone, Share2, Globe } from "lucide-react";
 import { HeadlineMd, BodyMd, LabelMd } from "@/components/ui/Typography";
-
-function InstagramIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="2" y="2" width="20" height="20" rx="5" />
-      <circle cx="12" cy="12" r="4" />
-      <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none" />
-    </svg>
-  );
-}
-
-function FacebookIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
 
 const FOOTER_LINKS = [
   { href: "/menu", label: "Menu" },
@@ -69,19 +51,11 @@ export function Footer() {
         <div className="flex flex-col gap-3">
           <LabelMd className="text-secondary-fixed-dim">Follow</LabelMd>
           <div className="flex items-center gap-4">
-            <a
-              href="#"
-              aria-label="Instagram"
-              className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors"
-            >
-              <InstagramIcon />
+            <a href="#" aria-label="Instagram" className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors">
+              <Share2 size={20} />
             </a>
-            <a
-              href="#"
-              aria-label="Facebook"
-              className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors"
-            >
-              <FacebookIcon />
+            <a href="#" aria-label="Facebook" className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors">
+              <Globe size={20} />
             </a>
           </div>
         </div>
