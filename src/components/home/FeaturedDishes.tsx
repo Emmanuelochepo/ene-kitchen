@@ -1,9 +1,9 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { FoodCard } from "@/components/ui/FoodCard";
 import { HeadlineLg, BodyLg, LabelMd } from "@/components/ui/Typography";
 import { DISHES } from "@/lib/menu-data";
+import { FeaturedDishCard } from "@/components/home/FeaturedDishCard";
 
-// Pick 3 featured dishes by id
 const FEATURED_IDS = ["jollof-rice-special", "pepper-soup", "efo-riro"];
 const FEATURED_DISHES = FEATURED_IDS.map((id) => DISHES.find((d) => d.id === id)!);
 
@@ -21,19 +21,14 @@ export function FeaturedDishes() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
         {FEATURED_DISHES.map((dish) => (
-          <FoodCard
-            key={dish.id}
-            name={dish.name}
-            description={dish.description}
-            price={dish.priceFormatted}
-            image={dish.image}
-            badge={dish.badge}
-          />
+          <FeaturedDishCard key={dish.id} dish={dish} />
         ))}
       </div>
 
       <div className="flex justify-center mt-12">
-        <Button variant="secondary">View Full Menu</Button>
+        <Link href="/menu">
+          <Button variant="secondary">View Full Menu</Button>
+        </Link>
       </div>
     </section>
   );
