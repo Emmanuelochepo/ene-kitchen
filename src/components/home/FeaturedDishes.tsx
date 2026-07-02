@@ -25,7 +25,7 @@ export function FeaturedDishes() {
             key={dish.id}
             name={dish.name}
             description={dish.description}
-            price={dish.price}
+            price={dish.priceFormatted}
             image={dish.image}
             badge={dish.badge}
           />

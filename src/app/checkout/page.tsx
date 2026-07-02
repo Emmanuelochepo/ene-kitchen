@@ -1,0 +1,254 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { CreditCard, Building2, ChevronRight, CheckCircle2, Copy, Check } from "lucide-react";
+import { useCart } from "@/context/CartContext";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { HeadlineXl, HeadlineLg, HeadlineMd, BodyLg, BodyMd, LabelMd, LabelSm } from "@/components/ui/Typography";
+
+type PaymentMethod = "paystack" | "bank-transfer" | null;
+type Step = "details" | "payment" | "confirmed";
+
+const DELIVERY_FEE = 1500;
+const VIRTUAL_ACCOUNT = { bank: "Wema Bank", accountName: "Ene's Kitchen / ORDER", accountNumber: "9901234567" };
+
+function formatPrice(n: number) { return "₦" + n.toLocaleString("en-NG"); }
+function generateOrderRef() { return "ENE-" + Math.random().toString(36).substring(2, 8).toUpperCase(); }
+
+export default function CheckoutPage() {
+  const { items, subtotal, clear } = useCart();
+  const total = subtotal + (items.length > 0 ? DELIVERY_FEE : 0);
+  const [step, setStep] = useState<Step>("details");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
+  const [orderRef] = useState(generateOrderRef);
+  const [copied, setCopied] = useState(false);
+  const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", note: "" });
+  const [errors, setErrors] = useState<Partial<typeof form>>({});
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
+    setForm((f) => ({ ...f, [e.target.id]: e.target.value }));
+    setErrors((er) => ({ ...er, [e.target.id]: "" }));
+  }
+
+  function validateDetails() {
+    const errs: Partial<typeof form> = {};
+    if (!form.name.trim()) errs.name = "Name is required";
+    if (!form.phone.trim()) errs.phone = "Phone number is required";
+    if (!form.address.trim()) errs.address = "Delivery address is required";
+    setErrors(errs);
+    return Object.keys(errs).length === 0;
+  }
+
+  function handleContinueToPayment() { if (validateDetails()) setStep("payment"); }
+  function handleConfirmOrder() { clear(); setStep("confirmed"); }
+  function copyAccount() { navigator.clipboard.writeText(VIRTUAL_ACCOUNT.accountNumber); setCopied(true); setTimeout(() => setCopied(false), 2000); }
+
+  if (items.length === 0 && step !== "confirmed") {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-24 text-center gap-6">
+        <HeadlineLg>Nothing to check out</HeadlineLg>
+        <BodyLg>Your cart is empty.</BodyLg>
+        <Link href="/menu"><Button variant="primary">Browse the Menu</Button></Link>
+      </main>
+    );
+  }
+
+  if (step === "confirmed") {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-24 text-center gap-6">
+        <div className="w-20 h-20 rounded-full bg-primary-fixed flex items-center justify-center">
+          <CheckCircle2 size={38} className="text-primary" />
+        </div>
+        <HeadlineXl as="h1">Order placed!</HeadlineXl>
+        <BodyLg className="max-w-md">
+          Your order <span className="font-bold text-on-surface">{orderRef}</span> has been received.
+          We&apos;ll confirm via WhatsApp within a few minutes.
+        </BodyLg>
+        {paymentMethod === "bank-transfer" && (
+          <div className="bg-surface-container-low rounded-lg p-6 text-left max-w-sm w-full flex flex-col gap-3">
+            <LabelMd className="text-secondary">Complete your payment</LabelMd>
+            <BodyMd className="text-on-surface">Transfer <span className="font-bold">{formatPrice(total)}</span> to:</BodyMd>
+            <BodyMd className="text-on-surface font-medium">{VIRTUAL_ACCOUNT.bank}</BodyMd>
+            <BodyMd className="text-on-surface">{VIRTUAL_ACCOUNT.accountName} — {orderRef}</BodyMd>
+            <div className="flex items-center gap-3">
+              <span className="font-display font-bold text-[22px] text-primary">{VIRTUAL_ACCOUNT.accountNumber}</span>
+              <button onClick={copyAccount} className="text-secondary hover:text-primary transition-colors cursor-pointer">
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+              </button>
+            </div>
+          </div>
+        )}
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link href="/"><Button variant="secondary">Back to Home</Button></Link>
+          <Link href="/menu"><Button variant="primary">Order Again</Button></Link>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="flex-1">
+      <div className="max-w-[1200px] mx-auto px-6 md:px-12 pt-12 pb-20 md:pt-16 md:pb-24">
+        <HeadlineXl as="h1" className="mb-2">Checkout</HeadlineXl>
+        <BodyMd className="mb-10">Order ref: <span className="font-bold text-on-surface">{orderRef}</span></BodyMd>
+
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 lg:gap-16 items-start">
+          <div className="flex flex-col gap-8">
+
+            {/* Step 1 */}
+            <div className={`rounded-lg border-2 ${step === "details" ? "border-primary" : "border-outline-variant"} overflow-hidden`}>
+              <div className="flex items-center justify-between px-6 py-4 bg-surface-container-low">
+                <div className="flex items-center gap-3">
+                  <span className={`w-7 h-7 rounded-full flex items-center justify-center text-[13px] font-bold ${step !== "details" ? "bg-primary text-on-primary" : "bg-secondary text-on-secondary"}`}>
+                    {step !== "details" ? <Check size={14} /> : "1"}
+                  </span>
+                  <HeadlineMd className="text-[18px]">Delivery Details</HeadlineMd>
+                </div>
+                {step === "payment" && (
+                  <button onClick={() => setStep("details")} className="font-body text-[13px] text-secondary hover:underline cursor-pointer">Edit</button>
+                )}
+              </div>
+
+              {step === "details" && (
+                <div className="p-6 flex flex-col gap-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <Input id="name" label="Full name *" placeholder="Your name" value={form.name} onChange={handleChange} error={errors.name} />
+                    <Input id="phone" label="Phone number *" placeholder="+234 800 000 0000" type="tel" value={form.phone} onChange={handleChange} error={errors.phone} />
+                  </div>
+                  <Input id="email" label="Email (optional)" placeholder="you@example.com" type="email" value={form.email} onChange={handleChange} />
+                  <Input id="address" label="Delivery address *" placeholder="Street, area, Lagos" value={form.address} onChange={handleChange} error={errors.address} />
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="note" className="font-body text-[13px] font-medium text-on-surface">Special instructions (optional)</label>
+                    <textarea id="note" rows={3} placeholder="Notes for the kitchen or delivery..." value={form.note} onChange={handleChange}
+                      className="w-full rounded-md bg-surface-container-low px-4 py-3 font-body text-[15px] text-on-surface placeholder:text-outline border border-outline-variant outline-none hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/20 resize-none transition-all" />
+                  </div>
+                  <Button variant="primary" onClick={handleContinueToPayment} className="w-full sm:w-auto justify-center">
+                    Continue to Payment <ChevronRight size={16} />
+                  </Button>
+                </div>
+              )}
+
+              {step === "payment" && (
+                <div className="px-6 py-4 bg-surface-container-lowest">
+                  <BodyMd className="text-on-surface font-medium">{form.name} · {form.phone}</BodyMd>
+                  <BodyMd>{form.address}</BodyMd>
+                </div>
+              )}
+            </div>
+
+            {/* Step 2 */}
+            {step === "payment" && (
+              <div className="rounded-lg border-2 border-primary overflow-hidden">
+                <div className="flex items-center gap-3 px-6 py-4 bg-surface-container-low">
+                  <span className="w-7 h-7 rounded-full bg-secondary text-on-secondary flex items-center justify-center text-[13px] font-bold">2</span>
+                  <HeadlineMd className="text-[18px]">Payment Method</HeadlineMd>
+                </div>
+
+                <div className="p-6 flex flex-col gap-4">
+                  {/* Paystack */}
+                  <button onClick={() => setPaymentMethod("paystack")}
+                    className={`w-full text-left rounded-lg border-2 p-5 transition-all cursor-pointer ${paymentMethod === "paystack" ? "border-primary bg-primary-fixed/20" : "border-outline-variant hover:border-outline"}`}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-[#00C3F7]/15 flex items-center justify-center shrink-0">
+                        <CreditCard size={20} className="text-[#00C3F7]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <HeadlineMd as="span" className="text-[16px]">Pay with Paystack</HeadlineMd>
+                          <span className="text-[11px] font-bold bg-[#00C3F7] text-white px-2 py-0.5 rounded-full shrink-0">Recommended</span>
+                        </div>
+                        <BodyMd className="text-[13px]">Card, bank, USSD, or mobile money — secured by Paystack</BodyMd>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === "paystack" ? "border-primary" : "border-outline-variant"}`}>
+                        {paymentMethod === "paystack" && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                      </div>
+                    </div>
+                  </button>
+
+                  {/* Bank transfer */}
+                  <button onClick={() => setPaymentMethod("bank-transfer")}
+                    className={`w-full text-left rounded-lg border-2 p-5 transition-all cursor-pointer ${paymentMethod === "bank-transfer" ? "border-primary bg-primary-fixed/20" : "border-outline-variant hover:border-outline"}`}>
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-primary-fixed flex items-center justify-center shrink-0">
+                        <Building2 size={20} className="text-primary" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <HeadlineMd as="span" className="text-[16px]">Direct Bank Transfer</HeadlineMd>
+                        <BodyMd className="text-[13px]">Transfer to a generated account — confirmed on receipt</BodyMd>
+                      </div>
+                      <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 ${paymentMethod === "bank-transfer" ? "border-primary" : "border-outline-variant"}`}>
+                        {paymentMethod === "bank-transfer" && <div className="w-2.5 h-2.5 rounded-full bg-primary" />}
+                      </div>
+                    </div>
+                  </button>
+
+                  {paymentMethod === "bank-transfer" && (
+                    <div className="bg-surface-container-low rounded-lg p-5 flex flex-col gap-3 animate-fade-in">
+                      <LabelMd className="text-secondary">Transfer Details</LabelMd>
+                      <div className="flex flex-col gap-1">
+                        <LabelSm className="text-on-surface-variant">BANK</LabelSm>
+                        <BodyMd className="text-on-surface font-medium">{VIRTUAL_ACCOUNT.bank}</BodyMd>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <LabelSm className="text-on-surface-variant">ACCOUNT NAME</LabelSm>
+                        <BodyMd className="text-on-surface font-medium">{VIRTUAL_ACCOUNT.accountName} — {orderRef}</BodyMd>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        <LabelSm className="text-on-surface-variant">ACCOUNT NUMBER</LabelSm>
+                        <div className="flex items-center gap-3">
+                          <span className="font-display font-bold text-[26px] text-primary tracking-wider">{VIRTUAL_ACCOUNT.accountNumber}</span>
+                          <button onClick={copyAccount} className="flex items-center gap-1.5 text-secondary hover:text-primary transition-colors cursor-pointer">
+                            {copied ? <Check size={16} /> : <Copy size={16} />}
+                            <LabelSm>{copied ? "Copied!" : "Copy"}</LabelSm>
+                          </button>
+                        </div>
+                      </div>
+                      <BodyMd className="text-[12px] text-on-surface-variant border-t border-outline-variant pt-3">
+                        Transfer exactly <span className="font-bold text-on-surface">{formatPrice(total)}</span>. Order confirmed once payment is received.
+                      </BodyMd>
+                    </div>
+                  )}
+
+                  {paymentMethod && (
+                    <Button variant="primary" onClick={handleConfirmOrder} className="w-full justify-center mt-2">
+                      {paymentMethod === "paystack" ? "Pay Now with Paystack" : "I've Made the Transfer"}
+                    </Button>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Order summary sidebar */}
+          <div className="bg-surface-container-lowest rounded-lg shadow-raised p-6 flex flex-col gap-4 lg:sticky lg:top-28">
+            <HeadlineMd as="h2" className="text-[18px]">Order Summary</HeadlineMd>
+            <div className="flex flex-col gap-3 max-h-48 overflow-y-auto pr-1">
+              {items.map((item) => (
+                <div key={item.id} className="flex justify-between gap-4">
+                  <BodyMd className="text-on-surface flex-1 leading-snug">{item.name} <span className="text-outline">×{item.quantity}</span></BodyMd>
+                  <BodyMd className="text-on-surface font-medium shrink-0">{formatPrice(item.price * item.quantity)}</BodyMd>
+                </div>
+              ))}
+            </div>
+            <div className="border-t border-outline-variant pt-4 flex flex-col gap-2">
+              <div className="flex justify-between">
+                <BodyMd className="text-on-surface">Subtotal</BodyMd>
+                <BodyMd className="text-on-surface">{formatPrice(subtotal)}</BodyMd>
+              </div>
+              <div className="flex justify-between">
+                <BodyMd className="text-on-surface">Delivery</BodyMd>
+                <BodyMd className="text-on-surface">{formatPrice(DELIVERY_FEE)}</BodyMd>
+              </div>
+            </div>
+            <div className="border-t border-outline-variant pt-4 flex justify-between items-center">
+              <LabelMd className="text-on-surface">Total</LabelMd>
+              <BodyLg as="span" className="font-bold text-secondary text-[20px]">{formatPrice(total)}</BodyLg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  );
+}

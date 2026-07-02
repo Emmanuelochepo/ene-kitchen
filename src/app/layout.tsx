@@ -8,6 +8,7 @@ import "./globals.css";
 import { AnnouncementBar } from "@/components/layout/AnnouncementBar";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { CartProvider } from "@/context/CartContext";
 import { WhatsAppWidget } from "@/components/ui/WhatsAppWidget";
 
 export const metadata: Metadata = {
@@ -23,11 +24,13 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-body">
-        <AnnouncementBar />
-        <Header />
-        <div className="flex-1 flex flex-col">{children}</div>
-        <Footer />
-        <WhatsAppWidget />
+        <CartProvider>
+          <AnnouncementBar />
+          <Header />
+          <div className="flex-1 flex flex-col">{children}</div>
+          <Footer />
+          <WhatsAppWidget />
+        </CartProvider>
       </body>
     </html>
   );
