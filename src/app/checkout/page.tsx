@@ -2,28 +2,40 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { CreditCard, Building2, ChevronRight, CheckCircle2, Copy, Check } from "lucide-react";
+import { CreditCard, Building2, ChevronRight, CheckCircle2, Copy, Check, Loader2 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
+import { submitOrder } from "@/lib/orders";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { HeadlineXl, HeadlineLg, HeadlineMd, BodyLg, BodyMd, LabelMd, LabelSm } from "@/components/ui/Typography";
+import {
+  HeadlineXl, HeadlineLg, HeadlineMd,
+  BodyLg, BodyMd, LabelMd, LabelSm,
+} from "@/components/ui/Typography";
 
 type PaymentMethod = "paystack" | "bank-transfer" | null;
 type Step = "details" | "payment" | "confirmed";
 
 const DELIVERY_FEE = 1500;
-const VIRTUAL_ACCOUNT = { bank: "Wema Bank", accountName: "Ene's Kitchen / ORDER", accountNumber: "9901234567" };
+const VIRTUAL_ACCOUNT = {
+  bank: "Wema Bank",
+  accountName: "Ene's Kitchen / ORDER",
+  accountNumber: "9901234567",
+};
 
-function formatPrice(n: number) { return "₦" + n.toLocaleString("en-NG"); }
-function generateOrderRef() { return "ENE-" + Math.random().toString(36).substring(2, 8).toUpperCase(); }
+function fmt(n: number) { return "₦" + n.toLocaleString("en-NG"); }
+function genRef() { return "ENE-" + Math.random().toString(36).substring(2, 8).toUpperCase(); }
 
 export default function CheckoutPage() {
   const { items, subtotal, clear } = useCart();
   const total = subtotal + (items.length > 0 ? DELIVERY_FEE : 0);
+
   const [step, setStep] = useState<Step>("details");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
-  const [orderRef] = useState(generateOrderRef);
+  const [orderRef] = useState(genRef);
   const [copied, setCopied] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState("");
+
   const [form, setForm] = useState({ name: "", phone: "", email: "", address: "", note: "" });
   const [errors, setErrors] = useState<Partial<typeof form>>({});
 
@@ -41,9 +53,50 @@ export default function CheckoutPage() {
     return Object.keys(errs).length === 0;
   }
 
-  function handleContinueToPayment() { if (validateDetails()) setStep("payment"); }
-  function handleConfirmOrder() { clear(); setStep("confirmed"); }
-  function copyAccount() { navigator.clipboard.writeText(VIRTUAL_ACCOUNT.accountNumber); setCopied(true); setTimeout(() => setCopied(false), 2000); }
+  function handleContinueToPayment() {
+    if (validateDetails()) setStep("payment");
+  }
+
+  async function handleConfirmOrder() {
+    if (!paymentMethod) return;
+    setSubmitting(true);
+    setSubmitError("");
+
+    const result = await submitOrder({
+      ref: orderRef,
+      customerName: form.name,
+      customerPhone: form.phone,
+      customerEmail: form.email || undefined,
+      deliveryAddress: form.address,
+      note: form.note || undefined,
+      paymentMethod,
+      items,
+      subtotal,
+      deliveryFee: DELIVERY_FEE,
+      total,
+    });
+
+    setSubmitting(false);
+
+    if (!result.success) {
+      setSubmitError("Something went wrong saving your order. Please try again.");
+      return;
+    }
+
+    clear();
+    setStep("confirmed");
+
+    // Open WhatsApp with order details — small delay so state updates first
+    if (result.whatsappUrl) {
+      setTimeout(() => window.open(result.whatsappUrl, "_blank"), 400);
+    }
+  }
+
+  function copyAccount() {
+    navigator.clipboard.writeText(VIRTUAL_ACCOUNT.accountNumber);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  }
 
   if (items.length === 0 && step !== "confirmed") {
     return (
@@ -66,10 +119,11 @@ export default function CheckoutPage() {
           Your order <span className="font-bold text-on-surface">{orderRef}</span> has been received.
           We&apos;ll confirm via WhatsApp within a few minutes.
         </BodyLg>
+
         {paymentMethod === "bank-transfer" && (
           <div className="bg-surface-container-low rounded-lg p-6 text-left max-w-sm w-full flex flex-col gap-3">
             <LabelMd className="text-secondary">Complete your payment</LabelMd>
-            <BodyMd className="text-on-surface">Transfer <span className="font-bold">{formatPrice(total)}</span> to:</BodyMd>
+            <BodyMd className="text-on-surface">Transfer <span className="font-bold">{fmt(total)}</span> to:</BodyMd>
             <BodyMd className="text-on-surface font-medium">{VIRTUAL_ACCOUNT.bank}</BodyMd>
             <BodyMd className="text-on-surface">{VIRTUAL_ACCOUNT.accountName} — {orderRef}</BodyMd>
             <div className="flex items-center gap-3">
@@ -80,6 +134,11 @@ export default function CheckoutPage() {
             </div>
           </div>
         )}
+
+        <BodyMd className="text-on-surface-variant text-[13px]">
+          A WhatsApp message with your order details has been sent to our kitchen.
+        </BodyMd>
+
         <div className="flex flex-col sm:flex-row gap-4">
           <Link href="/"><Button variant="secondary">Back to Home</Button></Link>
           <Link href="/menu"><Button variant="primary">Order Again</Button></Link>
@@ -97,8 +156,8 @@ export default function CheckoutPage() {
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px] gap-10 lg:gap-16 items-start">
           <div className="flex flex-col gap-8">
 
-            {/* Step 1 */}
-            <div className={`rounded-lg border-2 ${step === "details" ? "border-primary" : "border-outline-variant"} overflow-hidden`}>
+            {/* Step 1 — Delivery details */}
+            <div className={`rounded-lg border-2 overflow-hidden ${step === "details" ? "border-primary" : "border-outline-variant"}`}>
               <div className="flex items-center justify-between px-6 py-4 bg-surface-container-low">
                 <div className="flex items-center gap-3">
                   <span className={`w-7 h-7 rounded-full flex items-center justify-center text-[13px] font-bold ${step !== "details" ? "bg-primary text-on-primary" : "bg-secondary text-on-secondary"}`}>
@@ -138,7 +197,7 @@ export default function CheckoutPage() {
               )}
             </div>
 
-            {/* Step 2 */}
+            {/* Step 2 — Payment */}
             {step === "payment" && (
               <div className="rounded-lg border-2 border-primary overflow-hidden">
                 <div className="flex items-center gap-3 px-6 py-4 bg-surface-container-low">
@@ -184,6 +243,7 @@ export default function CheckoutPage() {
                     </div>
                   </button>
 
+                  {/* Bank transfer details */}
                   {paymentMethod === "bank-transfer" && (
                     <div className="bg-surface-container-low rounded-lg p-5 flex flex-col gap-3 animate-fade-in">
                       <LabelMd className="text-secondary">Transfer Details</LabelMd>
@@ -206,14 +266,20 @@ export default function CheckoutPage() {
                         </div>
                       </div>
                       <BodyMd className="text-[12px] text-on-surface-variant border-t border-outline-variant pt-3">
-                        Transfer exactly <span className="font-bold text-on-surface">{formatPrice(total)}</span>. Order confirmed once payment is received.
+                        Transfer exactly <span className="font-bold text-on-surface">{fmt(total)}</span>. Order confirmed once payment is received.
                       </BodyMd>
                     </div>
                   )}
 
+                  {submitError && (
+                    <BodyMd className="text-error text-[13px] bg-error-container rounded-lg px-4 py-3">{submitError}</BodyMd>
+                  )}
+
                   {paymentMethod && (
-                    <Button variant="primary" onClick={handleConfirmOrder} className="w-full justify-center mt-2">
-                      {paymentMethod === "paystack" ? "Pay Now with Paystack" : "I've Made the Transfer"}
+                    <Button variant="primary" onClick={handleConfirmOrder} disabled={submitting} className="w-full justify-center mt-2">
+                      {submitting ? (
+                        <><Loader2 size={16} className="animate-spin" /> Placing order...</>
+                      ) : paymentMethod === "paystack" ? "Pay Now with Paystack" : "I've Made the Transfer"}
                     </Button>
                   )}
                 </div>
@@ -228,23 +294,23 @@ export default function CheckoutPage() {
               {items.map((item) => (
                 <div key={item.id} className="flex justify-between gap-4">
                   <BodyMd className="text-on-surface flex-1 leading-snug">{item.name} <span className="text-outline">×{item.quantity}</span></BodyMd>
-                  <BodyMd className="text-on-surface font-medium shrink-0">{formatPrice(item.price * item.quantity)}</BodyMd>
+                  <BodyMd className="text-on-surface font-medium shrink-0">{fmt(item.price * item.quantity)}</BodyMd>
                 </div>
               ))}
             </div>
             <div className="border-t border-outline-variant pt-4 flex flex-col gap-2">
               <div className="flex justify-between">
                 <BodyMd className="text-on-surface">Subtotal</BodyMd>
-                <BodyMd className="text-on-surface">{formatPrice(subtotal)}</BodyMd>
+                <BodyMd className="text-on-surface">{fmt(subtotal)}</BodyMd>
               </div>
               <div className="flex justify-between">
                 <BodyMd className="text-on-surface">Delivery</BodyMd>
-                <BodyMd className="text-on-surface">{formatPrice(DELIVERY_FEE)}</BodyMd>
+                <BodyMd className="text-on-surface">{fmt(DELIVERY_FEE)}</BodyMd>
               </div>
             </div>
             <div className="border-t border-outline-variant pt-4 flex justify-between items-center">
               <LabelMd className="text-on-surface">Total</LabelMd>
-              <BodyLg as="span" className="font-bold text-secondary text-[20px]">{formatPrice(total)}</BodyLg>
+              <BodyLg as="span" className="font-bold text-secondary text-[20px]">{fmt(total)}</BodyLg>
             </div>
           </div>
         </div>
