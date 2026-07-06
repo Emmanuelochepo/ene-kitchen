@@ -40,7 +40,7 @@ export function Footer() {
         <div className="flex flex-col gap-3">
           <LabelMd className="text-secondary-fixed-dim">Contact</LabelMd>
           <a
-            href="tel:+2348000000000"
+            href="tel:+2348107045116"
             className="font-body text-[15px] text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors flex items-center gap-2"
           >
             <Phone size={16} /> +234 800 000 0000

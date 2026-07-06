@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/Input";
 import { HeadlineLg, HeadlineMd, BodyLg, BodyMd, LabelMd } from "@/components/ui/Typography";
 
 const CONTACT_ITEMS = [
-  { icon: Phone, label: "Phone", value: "+234 800 000 0000", href: "tel:+2348000000000" },
+  { icon: Phone, label: "Phone", value: "+234 810 704 5116", href: "tel:+2348107045116" },
   { icon: Mail, label: "Email", value: "hello@eneskitchen.com", href: "mailto:hello@eneskitchen.com" },
   { icon: MapPin, label: "Location", value: "Lagos, Nigeria", href: null },
 ];
@@ -43,7 +43,7 @@ export function ContactContent() {
             <div className="flex flex-col gap-5">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Input id="name" label="Full name" placeholder="Your name" value={form.name} onChange={handleChange} />
-                <Input id="phone" label="Phone number" placeholder="+234 800 000 0000" type="tel" value={form.phone} onChange={handleChange} />
+                <Input id="phone" label="Phone number" placeholder="+234 810 704 5116" type="tel" value={form.phone} onChange={handleChange} />
               </div>
               <Input id="email" label="Email address" placeholder="you@example.com" type="email" value={form.email} onChange={handleChange} />
               <div className="flex flex-col gap-1.5">
@@ -72,7 +72,7 @@ export function ContactContent() {
           </div>
 
           <a
-            href="https://wa.me/2348000000000"
+            href="https://wa.me/2348107045116"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-4 bg-[#25d366]/10 border border-[#25d366]/30 rounded-lg p-5 hover:bg-[#25d366]/15 transition-colors"

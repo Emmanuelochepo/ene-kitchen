@@ -35,7 +35,7 @@ export function WhatsAppWidget() {
 
       {/* Main button */}
       <a
-        href="https://wa.me/2348000000000"
+        href="https://wa.me/2348107045116"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="Chat with Ene's Kitchen on WhatsApp"

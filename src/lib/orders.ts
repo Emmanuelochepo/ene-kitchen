@@ -21,7 +21,7 @@ export interface OrderResult {
   whatsappUrl?: string;
 }
 
-const KITCHEN_WHATSAPP = "2348000000000"; // ← Replace with real number once provided
+const KITCHEN_WHATSAPP = "2348107045116"; // ← Temp test number — swap for real kitchen number before go-live
 
 export async function submitOrder(payload: OrderPayload): Promise<OrderResult> {
   // 1. Save to Supabase
