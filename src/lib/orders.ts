@@ -51,41 +51,43 @@ export async function submitOrder(payload: OrderPayload): Promise<OrderResult> {
     return { success: false, error: error.message };
   }
 
-  // 2. Build WhatsApp message
+  // 2. Build clean WhatsApp message
   const itemLines = payload.items
-    .map((i) => `  • ${i.name} x${i.quantity} — ${i.priceFormatted}`)
+    .map((i) => `  ${i.quantity}x ${i.name} — ${i.priceFormatted}`)
     .join("\n");
 
   const paymentLabel =
     payload.paymentMethod === "bank-transfer"
-      ? "Bank Transfer (awaiting payment)"
-      : "Paystack (paid online)";
+      ? "Bank Transfer ⏳ (awaiting payment)"
+      : "Paystack ✅ (paid online)";
 
-  const message = [
-    `🍽️ *New Order — ${payload.ref}*`,
+  const lines = [
+    `🍽️ *NEW ORDER — ${payload.ref}*`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `👤 *Customer*`,
+    `${payload.customerName}`,
+    `📞 ${payload.customerPhone}`,
+    payload.customerEmail ? `✉️ ${payload.customerEmail}` : "",
     ``,
-    `*Customer*`,
-    `Name: ${payload.customerName}`,
-    `Phone: ${payload.customerPhone}`,
-    payload.customerEmail ? `Email: ${payload.customerEmail}` : null,
+    `📍 *Delivery Address*`,
+    `${payload.deliveryAddress}`,
+    payload.note ? `\n📝 *Note:* ${payload.note}` : "",
     ``,
-    `*Delivery Address*`,
-    payload.deliveryAddress,
-    payload.note ? `\nNote: ${payload.note}` : null,
-    ``,
-    `*Items*`,
+    `🛒 *Order Items*`,
     itemLines,
     ``,
-    `Subtotal: ₦${payload.subtotal.toLocaleString("en-NG")}`,
-    `Delivery: ₦${payload.deliveryFee.toLocaleString("en-NG")}`,
-    `*Total: ₦${payload.total.toLocaleString("en-NG")}*`,
+    `━━━━━━━━━━━━━━━━━━━━`,
+    `Subtotal:   ₦${payload.subtotal.toLocaleString("en-NG")}`,
+    `Delivery:   ₦${payload.deliveryFee.toLocaleString("en-NG")}`,
+    `*Total:      ₦${payload.total.toLocaleString("en-NG")}*`,
     ``,
-    `*Payment:* ${paymentLabel}`,
+    `💳 *Payment:* ${paymentLabel}`,
+    `━━━━━━━━━━━━━━━━━━━━`,
   ]
-    .filter((line) => line !== null)
+    .filter((line) => line !== null && line !== undefined)
     .join("\n");
 
-  const whatsappUrl = `https://wa.me/${KITCHEN_WHATSAPP}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `https://wa.me/${KITCHEN_WHATSAPP}?text=${encodeURIComponent(lines)}`;
 
   return { success: true, whatsappUrl };
 }
