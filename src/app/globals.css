@@ -166,6 +166,14 @@ body {
   outline-offset: 2px;
 }
 
+/* Prevent iOS Safari auto-zoom on input focus.
+   Safari zooms in whenever an input's font-size is below 16px.
+   Setting it to 16px here stops the zoom without affecting visual size
+   since our components control appearance via padding/Tailwind classes. */
+input, textarea, select {
+  font-size: 16px;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
