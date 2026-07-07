@@ -43,7 +43,7 @@ export function Header() {
         </nav>
 
         <div className="hidden lg:flex items-center gap-4">
-          <Link href="/cart" aria-label={`View cart (${totalItems} items)`} className="relative p-2 text-primary hover:text-secondary transition-colors">
+          <Link href="/checkout" aria-label={`View cart (${totalItems} items)`} className="relative p-2 text-primary hover:text-secondary transition-colors">
             <ShoppingCart size={22} />
             {totalItems > 0 && (
               <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-secondary text-on-secondary text-[11px] font-bold flex items-center justify-center">
@@ -58,7 +58,7 @@ export function Header() {
 
         {/* Mobile controls */}
         <div className="flex items-center gap-3 lg:hidden">
-          <Link href="/cart" aria-label={`View cart (${totalItems} items)`} className="relative p-2 text-primary hover:text-secondary transition-colors">
+          <Link href="/checkout" aria-label={`View cart (${totalItems} items)`} className="relative p-2 text-primary hover:text-secondary transition-colors">
             <ShoppingCart size={22} />
             {totalItems > 0 && (
               <span className="absolute -top-0.5 -right-0.5 w-5 h-5 rounded-full bg-secondary text-on-secondary text-[11px] font-bold flex items-center justify-center">
