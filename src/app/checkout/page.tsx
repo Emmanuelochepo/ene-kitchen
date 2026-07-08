@@ -5,17 +5,18 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Plus, Minus, Trash2, CreditCard, Building2,
-  Wallet, CheckCircle2, Copy, Check, ShieldCheck, MessageCircle
+  Wallet, CheckCircle2, Copy, Check, ShieldCheck,
+  MessageCircle, AlertCircle, MapPin,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
 import { buildWhatsAppUrl, saveOrder } from "@/lib/orders";
+import { useSiteSettings, useIsOpen, useDeliveryZones } from "@/hooks/useStore";
 import { HeadlineXl, HeadlineLg, HeadlineMd, BodyLg, BodyMd, LabelMd, LabelSm } from "@/components/ui/Typography";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
 type PaymentMethod = "paystack" | "bank-transfer" | "on-delivery" | null;
 
-const DELIVERY_FEE = 1500;
 const SERVICE_CHARGE = 500;
 const VIRTUAL_ACCOUNT = {
   bank: "Wema Bank",
@@ -35,7 +36,16 @@ function genRef() { return "ENE-" + Math.random().toString(36).substring(2, 8).t
 
 export default function CheckoutPage() {
   const { items, subtotal, increment, decrement, removeItem } = useCart();
-  const total = subtotal + DELIVERY_FEE + SERVICE_CHARGE;
+  const { settings } = useSiteSettings();
+  const { isOpen, reason, nextOpenMsg } = useIsOpen(settings);
+  const { zones } = useDeliveryZones();
+
+  const [selectedZoneId, setSelectedZoneId] = useState<string>("");
+  const selectedZone = zones.find((z) => z.id === selectedZoneId);
+  const deliveryFee = selectedZone?.fee ?? (settings?.deliveryFeeDefault ?? 1500);
+  const minOrder = settings?.minOrderAmount ?? 3000;
+  const total = subtotal + deliveryFee + SERVICE_CHARGE;
+  const belowMinimum = subtotal < minOrder;
 
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(null);
   const [orderRef] = useState(genRef);
@@ -46,7 +56,7 @@ export default function CheckoutPage() {
     name: "", phone: "", address: "",
     deliveryTime: DELIVERY_TIMES[0], note: "",
   });
-  const [errors, setErrors] = useState<Partial<typeof form>>({});
+  const [errors, setErrors] = useState<Partial<typeof form> & { zone?: string }>({});
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) {
     setForm((f) => ({ ...f, [e.target.id]: e.target.value }));
@@ -54,10 +64,11 @@ export default function CheckoutPage() {
   }
 
   function validate() {
-    const errs: Partial<typeof form> = {};
+    const errs: Partial<typeof form> & { zone?: string } = {};
     if (!form.name.trim()) errs.name = "Required";
     if (!form.phone.trim()) errs.phone = "Required";
     if (!form.address.trim()) errs.address = "Required";
+    if (!selectedZoneId) errs.zone = "Please select your delivery area";
     setErrors(errs);
     return Object.keys(errs).length === 0;
   }
@@ -70,11 +81,15 @@ export default function CheckoutPage() {
       customerName: form.name,
       customerPhone: form.phone,
       deliveryAddress: form.address,
-      note: [form.deliveryTime !== DELIVERY_TIMES[0] ? `Delivery: ${form.deliveryTime}` : "", form.note].filter(Boolean).join(" | ") || undefined,
+      note: [
+        selectedZone ? `Zone: ${selectedZone.name}` : "",
+        form.deliveryTime !== DELIVERY_TIMES[0] ? `Delivery: ${form.deliveryTime}` : "",
+        form.note,
+      ].filter(Boolean).join(" | ") || undefined,
       paymentMethod: paymentMethod === "on-delivery" ? "bank-transfer" as const : paymentMethod as "paystack" | "bank-transfer",
       items,
       subtotal,
-      deliveryFee: DELIVERY_FEE,
+      deliveryFee,
       total,
     };
 
@@ -96,6 +111,26 @@ export default function CheckoutPage() {
         <HeadlineLg>Your cart is empty</HeadlineLg>
         <BodyLg>Add some dishes before checking out.</BodyLg>
         <Link href="/menu"><Button variant="primary">Browse the Menu</Button></Link>
+      </main>
+    );
+  }
+
+  // Kitchen closed — block checkout entirely
+  if (!isOpen && !confirmed) {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center px-6 py-24 text-center gap-6">
+        <div className="w-20 h-20 rounded-full bg-tertiary-fixed flex items-center justify-center">
+          <AlertCircle size={38} className="text-on-tertiary-fixed-variant" />
+        </div>
+        <HeadlineXl as="h1">We&apos;re closed</HeadlineXl>
+        <BodyLg className="max-w-md">{reason}</BodyLg>
+        <BodyMd className="text-on-surface font-medium">{nextOpenMsg}</BodyMd>
+        <div className="flex flex-col sm:flex-row gap-4">
+          <Link href="/menu"><Button variant="secondary">Browse the Menu</Button></Link>
+          <a href="https://wa.me/2348107045116" target="_blank" rel="noopener noreferrer">
+            <Button variant="primary">Contact Us on WhatsApp</Button>
+          </a>
+        </div>
       </main>
     );
   }
@@ -195,6 +230,24 @@ export default function CheckoutPage() {
                   <Input id="name" label="Full Name" placeholder="John Doe" value={form.name} onChange={handleChange} error={errors.name} />
                   <Input id="phone" label="Phone Number" placeholder="+234 800 000 0000" type="tel" value={form.phone} onChange={handleChange} error={errors.phone} />
                 </div>
+
+                {/* Delivery zone picker */}
+                <div className="flex flex-col gap-1.5">
+                  <label className="font-body text-[13px] font-medium text-on-surface flex items-center gap-1.5">
+                    <MapPin size={14} className="text-secondary" /> Delivery Area
+                  </label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {zones.map((zone) => (
+                      <button key={zone.id} type="button"
+                        onClick={() => { setSelectedZoneId(zone.id); setErrors((e) => ({ ...e, zone: "" })); }}
+                        className={`text-left p-3 rounded-lg border-2 transition-all cursor-pointer ${selectedZoneId === zone.id ? "border-primary bg-primary-fixed/20" : "border-outline-variant hover:border-outline"}`}>
+                        <BodyMd className={`font-medium text-[13px] ${selectedZoneId === zone.id ? "text-primary" : "text-on-surface"}`}>{zone.name}</BodyMd>
+                        <LabelSm className="text-secondary font-bold">{fmt(zone.fee)}</LabelSm>
+                      </button>
+                    ))}
+                  </div>
+                  {errors.zone && <span className="font-body text-[12px] text-error">{errors.zone}</span>}
+                </div>
                 <div className="flex flex-col gap-1.5">
                   <label htmlFor="address" className="font-body text-[13px] font-medium text-on-surface">Delivery Address</label>
                   <textarea id="address" rows={3} placeholder="Street address, building number, area" value={form.address} onChange={handleChange}
@@ -275,8 +328,10 @@ export default function CheckoutPage() {
                   <BodyMd className="text-inverse-on-surface font-medium">{fmt(subtotal)}</BodyMd>
                 </div>
                 <div className="flex justify-between">
-                  <BodyMd className="text-inverse-on-surface/70">Delivery Fee</BodyMd>
-                  <BodyMd className="text-inverse-on-surface font-medium">{fmt(DELIVERY_FEE)}</BodyMd>
+                  <BodyMd className="text-inverse-on-surface/70">
+                    Delivery {selectedZone ? `(${selectedZone.name.split("—")[0].trim()})` : ""}
+                  </BodyMd>
+                  <BodyMd className="text-inverse-on-surface font-medium">{fmt(deliveryFee)}</BodyMd>
                 </div>
                 <div className="flex justify-between">
                   <BodyMd className="text-inverse-on-surface/70">Service Charge</BodyMd>
@@ -288,12 +343,22 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
+              {/* Minimum order warning */}
+              {belowMinimum && (
+                <div className="bg-tertiary-fixed/20 border border-tertiary-fixed rounded-lg px-4 py-3 flex items-start gap-2">
+                  <AlertCircle size={15} className="text-on-tertiary-fixed-variant shrink-0 mt-0.5" />
+                  <LabelSm className="text-inverse-on-surface/80 leading-relaxed">
+                    Minimum order is {fmt(minOrder)}. Add {fmt(minOrder - subtotal)} more to proceed.
+                  </LabelSm>
+                </div>
+              )}
+
               <button
                 onClick={handleConfirm}
-                disabled={!paymentMethod}
+                disabled={!paymentMethod || belowMinimum}
                 className="w-full flex items-center justify-center gap-2 bg-secondary text-on-secondary rounded-full px-6 py-4 font-body font-bold text-[15px] hover:brightness-95 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer shadow-raised"
               >
-                Confirm & Pay →
+                {belowMinimum ? `Minimum order ${fmt(minOrder)}` : "Confirm & Pay →"}
               </button>
 
               <div className="flex items-center justify-center gap-2 text-inverse-on-surface/60">

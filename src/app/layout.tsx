@@ -10,6 +10,7 @@ import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/context/CartContext";
 import { WhatsAppWidget } from "@/components/ui/WhatsAppWidget";
+import { ClosedBanner } from "@/components/layout/ClosedBanner";
 
 export const metadata: Metadata = {
   title: "Ene's Kitchen",
@@ -26,6 +27,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col bg-surface text-on-surface font-body">
         <CartProvider>
           <AnnouncementBar />
+          <ClosedBanner />
           <Header />
           <div className="flex-1 flex flex-col">{children}</div>
           <Footer />
