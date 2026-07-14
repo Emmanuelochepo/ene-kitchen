@@ -91,9 +91,11 @@ export function Header() {
             {link.label}
           </Link>
         ))}
-        <Button variant="primary" className="w-full mt-4 justify-center">
-          Order Now
-        </Button>
+        <Link href="/menu" onClick={() => setMenuOpen(false)}>
+          <Button variant="primary" className="w-full mt-4 justify-center">
+            Order Now
+          </Button>
+        </Link>
       </nav>
     </header>
   );

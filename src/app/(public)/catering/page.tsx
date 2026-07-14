@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { HeadlineXl, HeadlineLg, HeadlineMd, BodyLg, BodyMd, LabelMd } from "@/components/ui/Typography";
 import { Card } from "@/components/ui/Card";
@@ -69,8 +70,8 @@ export default function CateringPage() {
               Nigerian cuisine, wherever you need it.
             </BodyLg>
             <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-              <Button variant="primary">Request a Quote</Button>
-              <Button variant="secondary">Chat on WhatsApp</Button>
+              <Link href="/contact"><Button variant="primary">Request a Quote</Button></Link>
+              <a href="https://wa.me/2348107045116" target="_blank" rel="noopener noreferrer"><Button variant="secondary">Chat on WhatsApp</Button></a>
             </div>
           </div>
 
@@ -133,9 +134,11 @@ export default function CateringPage() {
                     <BodyLg as="span" className="font-bold text-secondary">
                       {pkg.price}
                     </BodyLg>
-                    <Button variant={pkg.featured ? "primary" : "secondary"} className="w-full justify-center">
-                      Get Started
-                    </Button>
+                    <Link href="/contact" className="w-full">
+                      <Button variant={pkg.featured ? "primary" : "secondary"} className="w-full justify-center">
+                        Get Started
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               </Card>
@@ -151,7 +154,7 @@ export default function CateringPage() {
           Send us a message and we&apos;ll figure it out together. We cater to all
           budgets and occasions — just tell us what you have in mind.
         </BodyLg>
-        <Button variant="primary">Talk to Us on WhatsApp</Button>
+        <a href="https://wa.me/2348107045116" target="_blank" rel="noopener noreferrer"><Button variant="primary">Talk to Us on WhatsApp</Button></a>
       </section>
     </main>
   );

@@ -51,10 +51,10 @@ export function Footer() {
         <div className="flex flex-col gap-3">
           <LabelMd className="text-secondary-fixed-dim">Follow</LabelMd>
           <div className="flex items-center gap-4">
-            <a href="#" aria-label="Instagram" className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors">
+            <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors">
               <Share2 size={20} />
             </a>
-            <a href="#" aria-label="Facebook" className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors">
+            <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="text-inverse-on-surface/80 hover:text-inverse-on-surface transition-colors">
               <Globe size={20} />
             </a>
           </div>

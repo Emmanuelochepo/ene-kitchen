@@ -110,7 +110,7 @@ export default function AboutPage() {
           </div>
 
           <Link href="/menu">
-            <Button variant="primary">Explore Our Menu</Button>
+            <Link href="/menu"><Button variant="primary">Explore Our Menu</Button></Link>
           </Link>
         </div>
       </section>

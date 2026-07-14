@@ -128,7 +128,7 @@ export default function CheckoutPage() {
         <div className="flex flex-col sm:flex-row gap-4">
           <Link href="/menu"><Button variant="secondary">Browse the Menu</Button></Link>
           <a href="https://wa.me/2348107045116" target="_blank" rel="noopener noreferrer">
-            <Button variant="primary">Contact Us on WhatsApp</Button>
+            <a href="https://wa.me/2348107045116" target="_blank" rel="noopener noreferrer"><Button variant="primary">Contact Us on WhatsApp</Button></a>
           </a>
         </div>
       </main>
