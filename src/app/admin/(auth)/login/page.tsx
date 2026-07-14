@@ -30,15 +30,15 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center px-6">
-      <div className="w-full max-w-sm flex flex-col gap-8">
+    <div className="fixed inset-0 bg-surface flex items-center justify-center px-6">
+      <div className="w-full max-w-sm flex flex-col gap-6">
         {/* Brand */}
         <div className="flex flex-col items-center gap-3 text-center">
           <div className="w-14 h-14 rounded-full bg-primary flex items-center justify-center">
             <ChefHat size={26} className="text-on-primary" />
           </div>
-          <HeadlineLg as="h1" className="text-[22px]">Ene&apos;s Kitchen</HeadlineLg>
-          <BodyMd>Admin Dashboard — sign in to continue</BodyMd>
+          <HeadlineLg as="h1" className="text-[20px] md:text-[22px]">Ene&apos;s Kitchen</HeadlineLg>
+          <BodyMd className="text-[13px]">Admin Dashboard — sign in to continue</BodyMd>
         </div>
 
         {/* Form */}
@@ -49,7 +49,7 @@ export default function AdminLoginPage() {
             id="email"
             label="Email"
             type="email"
-            placeholder="ochepoemmanuel14@gmail.com"
+            placeholder="admin@eneskitchen.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
           />

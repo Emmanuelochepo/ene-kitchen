@@ -231,21 +231,23 @@ export default function CheckoutPage() {
                   <Input id="phone" label="Phone Number" placeholder="+234 800 000 0000" type="tel" value={form.phone} onChange={handleChange} error={errors.phone} />
                 </div>
 
-                {/* Delivery zone picker */}
+                {/* Delivery zone - compact dropdown */}
                 <div className="flex flex-col gap-1.5">
                   <label className="font-body text-[13px] font-medium text-on-surface flex items-center gap-1.5">
-                    <MapPin size={14} className="text-secondary" /> Delivery Area
+                    <MapPin size={14} className="text-secondary" /> Delivery Area *
                   </label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <select
+                    value={selectedZoneId}
+                    onChange={(e) => { setSelectedZoneId(e.target.value); setErrors((er) => ({ ...er, zone: "" })); }}
+                    className={`w-full rounded-md bg-surface-container-low px-4 py-3 font-body text-[15px] text-on-surface border outline-none hover:border-outline focus:border-primary focus:ring-2 focus:ring-primary/20 transition-all cursor-pointer ${errors.zone ? "border-error" : "border-outline-variant"}`}
+                  >
+                    <option value="">Select your area...</option>
                     {zones.map((zone) => (
-                      <button key={zone.id} type="button"
-                        onClick={() => { setSelectedZoneId(zone.id); setErrors((e) => ({ ...e, zone: "" })); }}
-                        className={`text-left p-3 rounded-lg border-2 transition-all cursor-pointer ${selectedZoneId === zone.id ? "border-primary bg-primary-fixed/20" : "border-outline-variant hover:border-outline"}`}>
-                        <BodyMd className={`font-medium text-[13px] ${selectedZoneId === zone.id ? "text-primary" : "text-on-surface"}`}>{zone.name}</BodyMd>
-                        <LabelSm className="text-secondary font-bold">{fmt(zone.fee)}</LabelSm>
-                      </button>
+                      <option key={zone.id} value={zone.id}>
+                        {zone.name} — ₦{zone.fee.toLocaleString("en-NG")}
+                      </option>
                     ))}
-                  </div>
+                  </select>
                   {errors.zone && <span className="font-body text-[12px] text-error">{errors.zone}</span>}
                 </div>
                 <div className="flex flex-col gap-1.5">

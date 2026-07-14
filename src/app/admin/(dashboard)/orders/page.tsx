@@ -41,7 +41,7 @@ export default function OrdersPage() {
   return (
     <div className="flex flex-col gap-6 max-w-5xl">
       <div>
-        <HeadlineXl as="h1" className="text-[22px] md:text-[28px]">Orders</HeadlineXl>
+        <HeadlineXl as="h1" className="text-[18px] md:text-[24px]">Orders</HeadlineXl>
         <BodyMd>Manage and update incoming orders.</BodyMd>
       </div>
 

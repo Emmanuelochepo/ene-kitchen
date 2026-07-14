@@ -57,22 +57,22 @@ export default function AdminDashboard() {
   return (
     <div className="flex flex-col gap-8 max-w-5xl">
       <div>
-        <HeadlineXl as="h1" className="text-[22px] md:text-[28px]">Dashboard</HeadlineXl>
-        <BodyMd>Welcome back. Here&apos;s what&apos;s happening today.</BodyMd>
+        <HeadlineXl as="h1" className="text-[18px] md:text-[24px]">Dashboard</HeadlineXl>
+        <BodyMd className="text-[12px] md:text-[14px]">Welcome back. Here&apos;s what&apos;s happening today.</BodyMd>
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {STAT_CARDS.map(({ label, value, icon: Icon, color }) => (
-          <div key={label} className="bg-surface-container-lowest rounded-lg p-5 flex flex-col gap-3 shadow-raised">
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center ${color}`}>
-              <Icon size={17} />
+          <div key={label} className="bg-surface-container-lowest rounded-lg p-4 md:p-5 flex flex-col gap-2 md:gap-3 shadow-raised">
+            <div className={`w-8 h-8 rounded-full flex items-center justify-center ${color}`}>
+              <Icon size={15} />
             </div>
             <div>
-              <p className="font-display font-bold text-[20px] md:text-[24px] text-primary leading-none">
+              <p className="font-display font-bold text-[18px] md:text-[22px] text-primary leading-none">
                 {loading ? "—" : value}
               </p>
-              <LabelSm className="text-on-surface-variant mt-1">{label}</LabelSm>
+              <LabelSm className="text-on-surface-variant mt-1 text-[10px] md:text-[11px]">{label}</LabelSm>
             </div>
           </div>
         ))}
@@ -80,37 +80,33 @@ export default function AdminDashboard() {
 
       {/* Recent orders */}
       <div className="bg-surface-container-lowest rounded-lg shadow-raised overflow-hidden">
-        <div className="flex items-center justify-between px-6 py-4 border-b border-outline-variant">
-          <HeadlineMd className="text-[16px] md:text-[18px]">Recent Orders</HeadlineMd>
-          <Link href="/admin/orders" className="flex items-center gap-1 font-body text-[13px] text-secondary hover:text-primary transition-colors font-medium">
-            View all <ChevronRight size={14} />
+        <div className="flex items-center justify-between px-4 md:px-6 py-4 border-b border-outline-variant">
+          <HeadlineMd className="text-[15px] md:text-[18px]">Recent Orders</HeadlineMd>
+          <Link href="/admin/orders" className="flex items-center gap-1 font-body text-[12px] md:text-[13px] text-secondary hover:text-primary transition-colors font-medium">
+            View all <ChevronRight size={13} />
           </Link>
         </div>
 
         {loading ? (
-          <div className="px-6 py-10 text-center">
-            <BodyMd>Loading orders...</BodyMd>
-          </div>
+          <div className="px-6 py-10 text-center"><BodyMd>Loading orders...</BodyMd></div>
         ) : recentOrders.length === 0 ? (
-          <div className="px-6 py-10 text-center">
-            <BodyMd>No orders yet.</BodyMd>
-          </div>
+          <div className="px-6 py-10 text-center"><BodyMd>No orders yet.</BodyMd></div>
         ) : (
           <div className="divide-y divide-outline-variant">
             {recentOrders.map((order) => (
               <Link key={order.id} href={`/admin/orders?ref=${order.ref}`}
-                className="flex items-center gap-4 px-6 py-4 hover:bg-surface-container transition-colors">
+                className="flex items-center gap-3 px-4 md:px-6 py-3 md:py-4 hover:bg-surface-container transition-colors">
                 <div className="flex-1 min-w-0">
-                  <p className="font-body font-bold text-[14px] text-on-surface">{order.ref}</p>
-                  <BodyMd className="text-[12px] truncate">{order.customer_name}</BodyMd>
+                  <p className="font-body font-bold text-[13px] md:text-[14px] text-on-surface">{order.ref}</p>
+                  <BodyMd className="text-[11px] md:text-[12px] truncate">{order.customer_name}</BodyMd>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="font-body font-bold text-[14px] text-secondary">{fmt(order.total)}</p>
-                  <LabelSm className="text-on-surface-variant">
+                  <p className="font-body font-bold text-[13px] md:text-[14px] text-secondary">{fmt(order.total)}</p>
+                  <LabelSm className="text-on-surface-variant text-[10px]">
                     {new Date(order.created_at).toLocaleDateString("en-NG", { day: "numeric", month: "short" })}
                   </LabelSm>
                 </div>
-                <span className={`shrink-0 text-[11px] font-bold px-2.5 py-1 rounded-full capitalize ${STATUS_COLORS[order.status] ?? "bg-surface-container text-on-surface"}`}>
+                <span className={`shrink-0 text-[10px] md:text-[11px] font-bold px-2 py-1 rounded-full capitalize ${STATUS_COLORS[order.status] ?? "bg-surface-container text-on-surface"}`}>
                   {order.status}
                 </span>
               </Link>

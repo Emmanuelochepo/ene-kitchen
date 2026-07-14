@@ -140,7 +140,7 @@ export default function MenuPage() {
     <div className="flex flex-col gap-6 max-w-5xl">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <HeadlineXl as="h1" className="text-[22px] md:text-[28px]">Menu</HeadlineXl>
+          <HeadlineXl as="h1" className="text-[18px] md:text-[24px]">Menu</HeadlineXl>
           <BodyMd>Add, edit, or remove dishes. Toggle stock for chiller items.</BodyMd>
         </div>
         <Button variant="primary" size="sm" onClick={openAdd} className="shrink-0">

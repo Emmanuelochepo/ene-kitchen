@@ -87,7 +87,7 @@ export default function SettingsPage() {
   return (
     <div className="flex flex-col gap-8 max-w-2xl">
       <div>
-        <HeadlineXl as="h1" className="text-[22px] md:text-[28px]">Settings</HeadlineXl>
+        <HeadlineXl as="h1" className="text-[18px] md:text-[24px]">Settings</HeadlineXl>
         <BodyMd>Manage operating hours, minimum order, and delivery zones.</BodyMd>
       </div>
 
