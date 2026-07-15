@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Plus, Minus, Trash2, CreditCard, Building2,
-  Wallet, CheckCircle2, Copy, Check, ShieldCheck,
+  CheckCircle2, Copy, Check, ShieldCheck,
   MessageCircle, AlertCircle, MapPin,
 } from "lucide-react";
 import { useCart } from "@/context/CartContext";
@@ -15,7 +15,7 @@ import { HeadlineXl, HeadlineLg, HeadlineMd, BodyLg, BodyMd, LabelMd, LabelSm } 
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 
-type PaymentMethod = "paystack" | "bank-transfer" | "on-delivery" | null;
+type PaymentMethod = "paystack" | "bank-transfer" | null;
 
 const SERVICE_CHARGE = 500;
 const VIRTUAL_ACCOUNT = {
@@ -86,7 +86,7 @@ export default function CheckoutPage() {
         form.deliveryTime !== DELIVERY_TIMES[0] ? `Delivery: ${form.deliveryTime}` : "",
         form.note,
       ].filter(Boolean).join(" | ") || undefined,
-      paymentMethod: paymentMethod === "on-delivery" ? "bank-transfer" as const : paymentMethod as "paystack" | "bank-transfer",
+      paymentMethod: paymentMethod as "paystack" | "bank-transfer",
       items,
       subtotal,
       deliveryFee,
@@ -282,7 +282,6 @@ export default function CheckoutPage() {
                 {[
                   { id: "paystack" as const, icon: CreditCard, label: "Pay Online", sub: "VIA PAYSTACK" },
                   { id: "bank-transfer" as const, icon: Building2, label: "Bank Transfer", sub: "MANUAL VERIF." },
-                  { id: "on-delivery" as const, icon: Wallet, label: "On Delivery", sub: "CASH OR POS" },
                 ].map(({ id, icon: Icon, label, sub }) => (
                   <button key={id} onClick={() => setPaymentMethod(id)}
                     className={`flex flex-col items-center gap-3 p-5 rounded-lg border-2 transition-all cursor-pointer ${paymentMethod === id ? "border-secondary bg-secondary-fixed/30" : "border-outline-variant hover:border-outline"}`}>
