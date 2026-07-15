@@ -33,6 +33,7 @@ export function FoodCard({
             src={image} alt={name} fill
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className={`object-cover transition-transform duration-500 ${canOrder ? "group-hover:scale-105" : "grayscale opacity-60"}`}
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-outline text-[12px] font-body">No image</div>

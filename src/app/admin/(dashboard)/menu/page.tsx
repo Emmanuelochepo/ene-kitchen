@@ -77,13 +77,21 @@ export default function MenuPage() {
     if (!file) return;
     setUploading(true);
     const supabase = createClient();
-    const ext = file.name.split(".").pop();
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
     const path = `dishes/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage.from("dish-images").upload(path, file, { upsert: true });
+    const { error } = await supabase.storage
+      .from("dish-images")
+      .upload(path, file, {
+        upsert: true,
+        contentType: file.type || "image/jpeg",
+      });
     if (!error) {
       const { data: { publicUrl } } = supabase.storage.from("dish-images").getPublicUrl(path);
       setForm((f) => ({ ...f, image_url: publicUrl }));
       setPreview(publicUrl);
+    } else {
+      console.error("Upload error:", error.message);
+      alert(`Upload failed: ${error.message}`);
     }
     setUploading(false);
   }
