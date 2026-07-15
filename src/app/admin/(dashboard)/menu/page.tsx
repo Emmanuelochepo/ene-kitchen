@@ -77,6 +77,15 @@ export default function MenuPage() {
     if (!file) return;
     setUploading(true);
     const supabase = createClient();
+
+    // Ensure we have a valid session before uploading
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      alert("Session expired. Please sign in again.");
+      setUploading(false);
+      return;
+    }
+
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
     const path = `dishes/${Date.now()}.${ext}`;
     const { error } = await supabase.storage
