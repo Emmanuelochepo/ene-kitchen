@@ -76,33 +76,34 @@ export default function MenuPage() {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploading(true);
-    const supabase = createClient();
 
-    // Ensure we have a valid session before uploading
-    const { data: { session } } = await supabase.auth.getSession();
-    if (!session) {
-      alert("Session expired. Please sign in again.");
+    try {
+      const cloudName = process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME!;
+      const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET!;
+
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", uploadPreset);
+      formData.append("folder", "enes-kitchen/dishes");
+
+      const res = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        { method: "POST", body: formData }
+      );
+
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error?.message ?? "Upload failed");
+      }
+
+      const data = await res.json();
+      setForm((f) => ({ ...f, image_url: data.secure_url }));
+      setPreview(data.secure_url);
+    } catch (err: any) {
+      alert(`Upload failed: ${err.message}`);
+    } finally {
       setUploading(false);
-      return;
     }
-
-    const ext = file.name.split(".").pop()?.toLowerCase() ?? "jpg";
-    const path = `dishes/${Date.now()}.${ext}`;
-    const { error } = await supabase.storage
-      .from("dish-images")
-      .upload(path, file, {
-        upsert: true,
-        contentType: file.type || "image/jpeg",
-      });
-    if (!error) {
-      const { data: { publicUrl } } = supabase.storage.from("dish-images").getPublicUrl(path);
-      setForm((f) => ({ ...f, image_url: publicUrl }));
-      setPreview(publicUrl);
-    } else {
-      console.error("Upload error:", error.message);
-      alert(`Upload failed: ${error.message}`);
-    }
-    setUploading(false);
   }
 
   async function handleSave() {
