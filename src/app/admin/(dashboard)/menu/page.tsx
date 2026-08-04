@@ -75,6 +75,21 @@ export default function MenuPage() {
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Validate file size — Cloudinary free plan limit is 10MB
+    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    if (file.size > maxSize) {
+      alert(`Image is too large (${(file.size / 1024 / 1024).toFixed(1)}MB). Please use an image under 10MB.`);
+      e.target.value = "";
+      return;
+    }
+
+    // Warn if over 5MB — still works but may be slow
+    if (file.size > 5 * 1024 * 1024) {
+      const proceed = confirm(`This image is ${(file.size / 1024 / 1024).toFixed(1)}MB. For best performance, images under 5MB are recommended. Continue anyway?`);
+      if (!proceed) { e.target.value = ""; return; }
+    }
+
     setUploading(true);
 
     try {
