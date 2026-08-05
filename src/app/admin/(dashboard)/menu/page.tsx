@@ -22,7 +22,7 @@ const EMPTY_FORM = {
   id: "", name: "", description: "", price: "",
   category: CATEGORIES[0], image_url: "",
   badge_label: "", badge_variant: "",
-  in_stock: true, is_chiller: false, active: true,
+  in_stock: true, is_chiller: false, active: true, featured: false,
 };
 
 function slugify(str: string) {
@@ -65,7 +65,7 @@ export default function MenuPage() {
       price: String(dish.price), category: dish.category,
       image_url: dish.image_url ?? "",
       badge_label: dish.badge_label ?? "", badge_variant: dish.badge_variant ?? "",
-      in_stock: dish.in_stock, is_chiller: dish.is_chiller, active: dish.active,
+      in_stock: dish.in_stock, is_chiller: dish.is_chiller, active: dish.active, featured: dish.featured ?? false,
     });
     setPreview(dish.image_url ?? "");
     setEditId(dish.id);
@@ -138,6 +138,7 @@ export default function MenuPage() {
       in_stock: form.in_stock,
       is_chiller: form.is_chiller,
       active: form.active,
+      featured: form.featured,
     };
 
     if (editId) {
@@ -309,6 +310,7 @@ export default function MenuPage() {
               {/* Toggles */}
               <div className="flex flex-col gap-3">
                 {[
+                  { key: "featured", label: "Featured on Homepage", sub: "Show in the Chef's Picks section" },
                   { key: "in_stock", label: "In Stock", sub: "Customers can order this dish" },
                   { key: "is_chiller", label: "Chiller Item", sub: "Pre-made item with limited stock" },
                   { key: "active", label: "Visible on Menu", sub: "Show this dish to customers" },
