@@ -318,8 +318,8 @@ export default function CheckoutPage() {
             </div>
           </div>
 
-          {/* ── Right sidebar ── */}
-          <div className="flex flex-col gap-4 lg:sticky lg:top-24">
+          {/* ── Right sidebar — desktop only ── */}
+          <div className="hidden lg:flex flex-col gap-4 lg:sticky lg:top-24">
             {/* Summary card — dark green */}
             <div className="bg-primary rounded-lg p-6 flex flex-col gap-4">
               <HeadlineMd className="text-inverse-on-surface text-[18px]">Order Summary</HeadlineMd>
@@ -382,6 +382,24 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+
+      {/* ── Mobile sticky bottom bar ── */}
+      <div className="lg:hidden fixed bottom-0 inset-x-0 z-30 bg-primary px-5 py-4 flex items-center justify-between gap-4 shadow-overlay">
+        <div className="flex flex-col">
+          <LabelSm className="text-inverse-on-surface/60">Total</LabelSm>
+          <span className="font-display font-bold text-[20px] text-secondary-container leading-none">{fmt(total)}</span>
+        </div>
+        <button
+          onClick={handleConfirm}
+          disabled={!paymentMethod || belowMinimum}
+          className="flex-1 max-w-[200px] flex items-center justify-center gap-2 bg-secondary text-on-secondary rounded-full px-6 py-3.5 font-body font-bold text-[15px] hover:brightness-95 active:scale-[0.98] transition-all disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer"
+        >
+          {belowMinimum ? `Min. ${fmt(minOrder)}` : "Confirm & Pay →"}
+        </button>
+      </div>
+
+      {/* Bottom padding on mobile so content isn't hidden behind sticky bar */}
+      <div className="lg:hidden h-24" />
     </main>
   );
 }
