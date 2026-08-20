@@ -12,15 +12,19 @@ export const viewport: Viewport = {
   themeColor: "#042419",
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
+  maximumScale: 5,
 };
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://ene-kitchen.vercel.app"),
   title: {
-    default: "Ene's Kitchen",
+    default: "Ene's Kitchen — Authentic Nigerian Cuisine, Lagos",
     template: "%s | Ene's Kitchen",
   },
-  description: "Authentic, premium Nigerian cuisine for daily dining and special events. Same-day delivery across Lagos.",
+  description: "Authentic, premium Nigerian cuisine for daily dining and special events. Same-day delivery across Lagos. Order jollof rice, pepper soup, grills and more.",
+  keywords: ["Nigerian food", "food delivery Lagos", "jollof rice", "Nigerian cuisine", "catering Lagos", "authentic Nigerian food", "Ene's Kitchen"],
+  authors: [{ name: "Ene's Kitchen" }],
+  creator: "Ene's Kitchen",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
@@ -34,17 +38,33 @@ export const metadata: Metadata = {
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
     shortcut: "/favicon-32x32.png",
   },
   openGraph: {
-    title: "Ene's Kitchen",
-    description: "Authentic, premium Nigerian cuisine for daily dining and special events.",
-    type: "website",
-    locale: "en_NG",
+    title: "Ene's Kitchen — Authentic Nigerian Cuisine, Lagos",
+    description: "Authentic, premium Nigerian cuisine for daily dining and special events. Same-day delivery across Lagos.",
+    url: "https://ene-kitchen.vercel.app",
     siteName: "Ene's Kitchen",
+    locale: "en_NG",
+    type: "website",
+    images: [{
+      url: "/og-image.png",
+      width: 1200,
+      height: 630,
+      alt: "Ene's Kitchen — Authentic Nigerian Cuisine",
+    }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Ene's Kitchen — Authentic Nigerian Cuisine, Lagos",
+    description: "Authentic, premium Nigerian cuisine for daily dining and special events. Same-day delivery across Lagos.",
+    images: ["/og-image.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true },
   },
 };
 

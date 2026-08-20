@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { clsx } from "clsx";
 import { Search, X } from "lucide-react";
 import { FoodCard } from "@/components/ui/FoodCard";
@@ -11,6 +12,7 @@ import { createClient } from "@/lib/supabase-client";
 const ALL = "All" as const;
 
 export function MenuGrid() {
+  const searchParams = useSearchParams();
   const [dishes, setDishes] = useState<any[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
   const [activeCategory, setActiveCategory] = useState<string>(ALL);
@@ -19,6 +21,11 @@ export function MenuGrid() {
   const { addItem } = useCart();
   const { settings } = useSiteSettings();
   const { isOpen } = useIsOpen(settings);
+
+  useEffect(() => {
+    const cat = searchParams.get("category");
+    if (cat) setActiveCategory(cat);
+  }, [searchParams]);
 
   useEffect(() => {
     const supabase = createClient();
